@@ -5,3 +5,7 @@ author: Michaela Jochcová (Kerberová)
 email: michaela.kerberova@gmail.com
 discord: k.michaela
 """
+
+import os
+import sys
+import csv
