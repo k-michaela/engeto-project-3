@@ -9,3 +9,6 @@ discord: k.michaela
 import os
 import sys
 import csv
+import requests
+from bs4 import BeautifulSoup as BS
+
