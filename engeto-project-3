@@ -11,4 +11,29 @@ import sys
 import csv
 import requests
 from bs4 import BeautifulSoup as BS
+from typing import List
 
+CHECK = "https://www.volby.cz/pls/ps2017nss/ps32"
+
+try:
+    FILE_NAME = sys.argv[2]
+except IndexError:
+    print("Filename not specified.")
+    sys.exit()
+else:
+    if ".csv" not in FILE_NAME:
+        print("Wrong file format entered.")
+        sys.exit()
+    elif os.path.exists(FILE_NAME):
+        print("Entered file name '{}' already exists".format(FILE_NAME))
+        sys.exit()
+
+try:
+    URL = sys.argv[1]
+except IndexError:
+    print("URL not specified.")
+    sys.exit()
+else:
+    if CHECK not in URL:
+        print("Wrong URL entered.")
+        sys.exit()
