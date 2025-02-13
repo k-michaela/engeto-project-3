@@ -11,10 +11,11 @@ import sys
 import csv
 import requests
 from bs4 import BeautifulSoup as BS
-from typing import List
 
 CHECK = "https://www.volby.cz/pls/ps2017nss/ps32"
 
+# checking for correctly entered inputs
+# checking for correctly entered url address
 try:
     FILE_NAME = sys.argv[2]
 except IndexError:
@@ -28,6 +29,7 @@ else:
         print("Entered file name '{}' already exists".format(FILE_NAME))
         sys.exit()
 
+# checking for correctly entered file name
 try:
     URL = sys.argv[1]
 except IndexError:
@@ -37,3 +39,28 @@ else:
     if CHECK not in URL:
         print("Wrong URL entered.")
         sys.exit()
+
+
+
+# Checking internet connection using available address
+def check_internet_connection():
+    try:
+        requests.get("https://www.google.com", timeout=5)
+        return True
+    except requests.ConnectionError:
+        return False
+
+# Checking response of a specific website
+def get_response(entered_url):
+    if not check_internet_connection():
+        print("No internet connection")
+        sys.exit()
+    
+    try:
+        with requests.session() as s:
+            url_request = s.get(entered_url)
+    except requests.ConnectionError:
+        print("No response from the website")
+        sys.exit()
+    else:
+        return url_request
