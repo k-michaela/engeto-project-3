@@ -52,25 +52,14 @@ def get_file_name() -> str:
 
 
 
-# Checking internet connection using available address
-def check_internet_connection():
-    try:
-        requests.get("https://www.google.com", timeout=5)
-        return True
-    except requests.ConnectionError:
-        return False
-
-# Checking response of a specific website
+# checking internet connection and URL availability
 def get_response(entered_url):
-    if not check_internet_connection():
-        print("No internet connection")
-        sys.exit()
-    
     try:
         with requests.session() as s:
             url_request = s.get(entered_url)
-    except requests.ConnectionError:
-        print("No response from the website")
+            url_request.raise_for_status()
+    except requests.RequestException:
+        print("Failed to retrieve data from the URL. Please check your internet connection or the URL and try again.")
         sys.exit()
     else:
         return url_request
