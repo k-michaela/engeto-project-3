@@ -22,18 +22,24 @@ def main():
 def get_url() -> str:
     url_check = "https://www.volby.cz/pls/ps2017nss/ps32"
     if len(sys.argv) != 3:
-        print("Please, enter the correct inputs: script name, url, file name. -> script_name.py 'url' 'file_name.csv'")
+        print("Please, enter the correct inputs: 'url' 'file_name.csv'.")
         sys.exit()
     url_adress = sys.argv[1]
     if url_check not in url_adress:
-        print("Wrong url entered.")
+        print("Wrong URL entered.")
+        sys.exit()
+    try:
+        response = requests.get(url_adress, timeout=5)
+        response.raise_for_status()
+    except requests.RequestException:
+        print("Invalid or unreachable URL entered. Check your internet connection.")
         sys.exit()
     return url_adress
 
 # checking for correctly entered file name
 def get_file_name() -> str:
     if len(sys.argv) != 3:
-        print("Please, enter the correct inputs: script name, url, file name. -> script_name.py 'url' 'file_name.csv'")
+        print("Please, enter the correct inputs: 'url' 'file_name.csv'.")
         sys.exit()
     file_name = sys.argv[2]
     if not file_name.endswith(".csv"):
