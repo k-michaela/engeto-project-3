@@ -68,7 +68,26 @@ def get_response(entered_url):
         sys.exit()
     else:
         return url_request
-    
+
+# html parsing
+def make_soup(url_request):
+    pass
+
+# create a dictionary - keys: party names, values: votes
+def find_candidate_parties():
+    pass
+
+# city ​​name search
+def get_city_name():
+    pass
+
+# getting selected data from website
+def get_selected_data():
+    pass
+
+# saving data to csv file
+def print_to_csv():
+    pass
 
 if __name__ == "__main__":
     main()
