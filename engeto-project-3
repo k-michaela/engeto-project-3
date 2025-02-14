@@ -71,7 +71,7 @@ def get_response(entered_url):
 
 # html parsing
 def make_soup(url_request):
-    pass
+    return BS(url_request.text, "html.parser")
 
 # create a dictionary - keys: party names, values: votes
 def find_candidate_parties():
