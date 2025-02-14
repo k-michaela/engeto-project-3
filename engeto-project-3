@@ -11,34 +11,38 @@ import sys
 import csv
 import requests
 from bs4 import BeautifulSoup as BS
+from typing import List
 
-CHECK = "https://www.volby.cz/pls/ps2017nss/ps32"
+# main function
+def main():
+    pass
 
 # checking for correctly entered inputs
 # checking for correctly entered url address
-try:
-    FILE_NAME = sys.argv[2]
-except IndexError:
-    print("Filename not specified.")
-    sys.exit()
-else:
-    if ".csv" not in FILE_NAME:
-        print("Wrong file format entered.")
+def get_url() -> str:
+    url_check = "https://www.volby.cz/pls/ps2017nss/ps32"
+    if len(sys.argv) != 3:
+        print("Please, enter the correct inputs: script name, url, file name. -> script_name.py 'url' 'file_name.csv'")
         sys.exit()
-    elif os.path.exists(FILE_NAME):
-        print("Entered file name '{}' already exists".format(FILE_NAME))
+    url_adress = sys.argv[1]
+    if url_check not in url_adress:
+        print("Wrong url entered.")
         sys.exit()
+    return url_adress
 
 # checking for correctly entered file name
-try:
-    URL = sys.argv[1]
-except IndexError:
-    print("URL not specified.")
-    sys.exit()
-else:
-    if CHECK not in URL:
-        print("Wrong URL entered.")
+def get_file_name() -> str:
+    if len(sys.argv) != 3:
+        print("Please, enter the correct inputs: script name, url, file name. -> script_name.py 'url' 'file_name.csv'")
         sys.exit()
+    file_name = sys.argv[2]
+    if not file_name.endswith(".csv"):
+        print("Wrong file format entered.")
+        sys.exit()
+    if os.path.exists(file_name):
+        print(f"Entered file name '{file_name}' already exists.")
+        sys.exit()
+    return file_name
 
 
 
@@ -64,3 +68,7 @@ def get_response(entered_url):
         sys.exit()
     else:
         return url_request
+    
+
+if __name__ == "__main__":
+    main()
