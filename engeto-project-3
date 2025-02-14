@@ -17,30 +17,26 @@ from typing import List
 def main():
     pass
 
-# checking for correctly entered inputs
-# checking for correctly entered url address
-def get_url() -> str:
-    url_check = "https://www.volby.cz/pls/ps2017nss/ps32"
+# checking correct number of arguments
+def check_arguments() -> None:
     if len(sys.argv) != 3:
-        print("Please, enter the correct inputs: 'url' 'file_name.csv'.")
+        print("Please, enter the correct arguments: 'url' 'file_name.csv'.")
         sys.exit()
+
+# checking for correctly entered url address
+def validate_url_adress() -> str:
+    check_arguments()
+    url_check = "https://www.volby.cz/pls/ps2017nss/ps32"
     url_adress = sys.argv[1]
     if url_check not in url_adress:
         print("Wrong URL entered.")
         sys.exit()
-    try:
-        response = requests.get(url_adress, timeout=5)
-        response.raise_for_status()
-    except requests.RequestException:
-        print("Invalid or unreachable URL entered. Check your internet connection.")
-        sys.exit()
-    return url_adress
+    else:
+        return url_adress
 
 # checking for correctly entered file name
-def get_file_name() -> str:
-    if len(sys.argv) != 3:
-        print("Please, enter the correct inputs: 'url' 'file_name.csv'.")
-        sys.exit()
+def validate_file_name() -> str:
+    check_arguments()
     file_name = sys.argv[2]
     if not file_name.endswith(".csv"):
         print("Wrong file format entered.")
@@ -50,31 +46,35 @@ def get_file_name() -> str:
         sys.exit()
     return file_name
 
-
-
 # checking internet connection and URL availability
-def get_response(entered_url):
+def get_response(url_adress: str):
     try:
-        with requests.session() as s:
-            url_request = s.get(entered_url)
-            url_request.raise_for_status()
+        response = requests.get(url_adress, timeout=5)
+        response.raise_for_status()
     except requests.RequestException:
-        print("Failed to retrieve data from the URL. Please check your internet connection or the URL and try again.")
+        print("Invalid or unreachable URL entered. Please try again later.")
         sys.exit()
-    else:
-        return url_request
-
+    return response
+        
 # html parsing
-def make_soup(url_request):
-    return BS(url_request.text, "html.parser")
-
-# create a dictionary - keys: party names, values: votes
-def find_candidate_parties():
-    pass
+def make_soup(response: requests.Response) -> BS:
+    return BS(response.text, "html.parser")
 
 # city ​​name search
-def get_city_name():
-    pass
+def get_city_name(parsed: BS) -> str:
+    for element in parsed.select("h3"):
+        if "obec" in element.text.casefold():
+            return element.text.strip().split(": ")[-1]
+    return ""
+
+# create a dictionary where keys are party names values ​​are votes
+def find_candidate_parties(parsed) -> dict:
+    parties = {}
+    for table in parsed.find_all("table")[1:]:
+        for key in table.select("td.overflow_name"):
+            value = key.find_next_sibling("td").text
+            parties[key.text] = value
+    return parties
 
 # getting selected data from website
 def get_selected_data():
