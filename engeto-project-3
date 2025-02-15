@@ -13,10 +13,6 @@ import requests
 from bs4 import BeautifulSoup as BS
 from typing import List
 
-# main function
-def main():
-    pass
-
 # checking correct number of arguments
 def check_arguments() -> None:
     if len(sys.argv) != 3:
@@ -60,6 +56,16 @@ def get_response(url_adress: str):
 def make_soup(response: requests.Response) -> BS:
     return BS(response.text, "html.parser")
 
+# gets HTML elements matching specified selector
+def get_elements(soup, selector) -> list:
+    return soup.select(selector)
+
+# creates a new child url
+def create_new_url(url_base_part: str, url_extension_part: str) -> str:
+    original_url = url_base_part.split("/")[:-1]
+    new_child_url = original_url + [url_extension_part]
+    return "/".join(new_child_url)
+
 # city ​​name search
 def get_city_name(parsed: BS) -> str:
     for element in parsed.select("h3"):
@@ -76,13 +82,64 @@ def find_candidate_parties(parsed) -> dict:
             parties[key.text] = value
     return parties
 
+# removing non-breaking space character
+def clean_data(data: dict) -> dict:
+    symbol = "\xa0"
+    return {key: value.replace(symbol, "") for key, value in data.items()}
+
 # getting selected data from website
-def get_selected_data():
-    pass
+def get_selected_data(link, parsed) -> dict:
+    data = {
+        "City code": link.split("=")[-2].split("&")[0],
+        "City name": get_city_name(parsed),
+        "Registered voters": parsed.find("td", {"headers": "sa2"}).text,
+        "Envelopes": parsed.find("td", {"headers": "sa3"}).text,
+        "Valid votes": parsed.find("td", {"headers": "sa6"}).text
+    }
+    data.update(find_candidate_parties(parsed))
+    return clean_data(data)
+
+# processing data from web and returning data in dictionary
+def get_data_from_url(link) -> dict:
+    response = get_response(link)
+    parsed = make_soup(response)
+    return get_selected_data(link, parsed)
 
 # saving data to csv file
-def print_to_csv():
-    pass
+def save_to_csv(data: List[dict], file_name, header) -> None:
+    try:
+        with open(file_name, "w", newline="", encoding="UTF-8") as file:
+            csv_writer = csv.DictWriter(file, fieldnames=header.keys())
+            csv_writer.writeheader()
+            for record in data:
+                csv_writer.writerow(record)
+    except IndexError as error:
+        print(f"Data processing error: {error}")
+    else:
+        return print(f"Successfully written data to: {file_name}")
+
+# main function
+def main():
+    
+    entered_url = validate_url_adress()
+    entered_file_name = validate_file_name()
+
+    print(f"Connecting to URL: {entered_url}")
+    response = get_response(entered_url)
+    print(f"Downloading data from URL: {entered_url}")
+
+    parsed = make_soup(response)
+
+    links = [create_new_url(entered_url, a["href"]) for a in get_elements(parsed, "td.cislo a")]
+    rows = [get_data_from_url(link) for link in links]
+
+    if not rows:
+        print("No data found. Please check URL and try again.")
+        sys.exit()
+
+    print(f"Saving data to: {os.path.abspath(entered_file_name)}")
+    save_to_csv(rows, entered_file_name, rows[0])
+
 
 if __name__ == "__main__":
     main()
