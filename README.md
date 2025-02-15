@@ -1,7 +1,4 @@
-# engeto-project-3
-Code for the third Engeto project – Election scraper
-
-# Election scraper #
+# Code for the third Engeto project – Election scraper #
 ## Project description ##
 The goal of this project is to obtain [the results of the elections to the Chamber of Deputies of the Parliament of the Czech Republic in 2017](https://www.volby.cz/pls/ps2017nss/ps3?xjazyk=CZ) using scraping.
 After entering the selected URL address, the script will download the data of the relevant cities along with the election results and save them to the selected CSV file.
@@ -21,13 +18,13 @@ List of required libraries and their versions: `requirements.txt`
 
 ### File execution ###
 Running the project is via terminal/command line and require 2 arguments:
-1. District URL
-2. Output file name (in CSV format)
+1. argument: district URL
+2. argument: output file name (in CSV format)
 
 ### Project example ###
 Voting results for Svitavy district:
-1. argument `https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=9&xnumnuts=5303`
-2. argument `vysledky_svitavy.csv`
+1. argument: `https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=9&xnumnuts=5303`
+2. argument: `vysledky_svitavy.csv`
 
 **Running the script**:  
 `python engeto-project-3 'https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=9&xnumnuts=5303' 'vysledky_svitavy.csv'`
